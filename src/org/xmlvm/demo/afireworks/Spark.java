@@ -27,38 +27,55 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 /**
  * A sparks of the big fireworks. A {@link Bomb} contains many Sparks.
  */
 public class Spark {
-    private final Bitmap image;
-    private float        x;
-    private float        y;
-    private float        vx;
-    private float        vy;
-    private boolean      outOfSight;
-    private Environment  environment;
-    private Paint        paint = new Paint();
-    private long         lastRenderTime;
-    private long         renderTimeDiff;
-    private float        stretchFactor;
-    private int          counter;
+    private static final Bitmap[] image            = new Bitmap[4];
+    private final StarResources   starResources;
+    private float                 x;
+    private float                 y;
+    private float                 vx;
+    private float                 vy;
+    private boolean               outOfSight;
+    private Environment           environment;
+    private Paint                 paint            = new Paint();
+    private long                  lastRenderTime;
+    private long                  renderTimeDiff;
+    private float                 stretchFactor;
+    private boolean               scheduleForReset = false;
+    private Point                 whereToReset     = new Point();
+    private Bitmap                bitmap;
 
 
-    public Spark(Resources resources, Environment environment) {
+    public Spark(StarResources starResources, Environment environment) {
         this.environment = environment;
-        this.image = BitmapFactory.decodeResource(resources, getStarId());
+        this.starResources = starResources;
+        this.bitmap = starResources.getCachedStarBitmap(getRandomStarIndex());
     }
 
-    void reset(int x, int y) {
-        this.x = x;
-        this.y = y;
+    /**
+     * Another thread (e.g. main thread when receiving touch events) can call
+     * this method to schedule the calculation thread to reset the next time.
+     */
+    public void scheduleForReset(int x, int y, int pointerId) {
+        int color = (pointerId < 0) ? getRandomStarIndex() : pointerId;
+        bitmap = starResources.getCachedStarBitmap(color);
+        whereToReset.x = x;
+        whereToReset.y = y;
+        scheduleForReset = true;
+        outOfSight = false;
+    }
+
+    private void reset() {
+        this.x = whereToReset.x;
+        this.y = whereToReset.y;
         vx = (float) (Math.random() * Const.MAX2V) - (Const.MAX2V / 2);
         vy = (float) (Math.random() * Const.MAX2V) - (Const.MAX2V / 2);
         outOfSight = false;
         lastRenderTime = 0;
+        scheduleForReset = false;
     }
 
     public float getX() {
@@ -86,6 +103,10 @@ public class Spark {
     }
 
     public void nextStep() {
+        if (scheduleForReset) {
+            reset();
+        }
+
         if (outOfSight) {
             return;
         }
@@ -96,18 +117,14 @@ public class Spark {
             return;
         }
 
+        long currentTimeMillis = System.currentTimeMillis();
         if (lastRenderTime != 0) {
-            renderTimeDiff = System.currentTimeMillis() - lastRenderTime;
+            renderTimeDiff = currentTimeMillis - lastRenderTime;
             stretchFactor = renderTimeDiff / (float) Const.UPDATE_DELAY;
         } else {
             stretchFactor = 1;
         }
-        lastRenderTime = System.currentTimeMillis();
-
-//        if (counter++ == 50) {
-//            counter = 0;
-//            Log.d("DEBUG", "Stretch Factor: " + stretchFactor);
-//        }
+        lastRenderTime = currentTimeMillis;
 
         // Gravity
         vx += (Const.DV * (-environment.rotX / 10f) * stretchFactor);
@@ -117,19 +134,19 @@ public class Spark {
     }
 
     public void render(Canvas canvas) {
-        canvas.drawBitmap(image, x, y, paint);
+        canvas.drawBitmap(bitmap, x, y, paint);
     }
 
-    private static int getStarId() {
-        int starId = R.drawable.star4;
+    private static int getRandomStarIndex() {
         double rand = (Math.random() * 4);
         if (rand < 1) {
-            starId = R.drawable.star1;
+            return 0;
         } else if (rand < 2) {
-            starId = R.drawable.star2;
+            return 1;
         } else if (rand < 3) {
-            starId = R.drawable.star3;
+            return 2;
+        } else {
+            return 3;
         }
-        return starId;
     }
 }

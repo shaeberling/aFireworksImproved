@@ -22,7 +22,6 @@ package org.xmlvm.demo.afireworks;
 
 import org.xmlvm.demo.afireworks.AndroidFireworks.Environment;
 
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
@@ -32,24 +31,24 @@ import android.util.Log;
  */
 public class Fireworks {
     private Bomb[]      bombs;
-    private int         touchCount = 0;
+    private int         touchCount    = 0;
     private Environment environment;
-    private boolean     userActive = false;
-    private long        lastUpdate;
-    private int         count      = 0;
-    private double      fpsSum     = 0;
-    private Paint       blackPaint = new Paint(android.R.color.black);
+    private boolean     userActive    = false;
+    private Paint       blackPaint    = new Paint(android.R.color.black);
     private Thread      updateThread;
 
+    /** For randomizing pointer colors after reset. */
+    private int         pointerOffset = 0;
 
-    public Fireworks(Resources resources, Environment environment) {
+
+    public Fireworks(StarResources resources, Environment environment) {
         this.environment = environment;
         bombs = new Bomb[Const.BOMB_COUNT];
         // Initialize normal bombs.
         for (int i = 0; i < bombs.length; ++i) {
             bombs[i] = new Bomb(resources, environment);
-            bombs[i].reset((int) (Math.random() * (environment.windowWidth - 60)) + 30,
-                    (int) (Math.random() * (environment.windowHeight - 60)) + 30);
+            bombs[i].scheduleForReset((int) (Math.random() * (environment.windowWidth - 60)) + 30,
+                    (int) (Math.random() * (environment.windowHeight - 60)) + 30, -1);
         }
     }
 
@@ -93,18 +92,10 @@ public class Fireworks {
     public void render(Canvas canvas) {
         canvas.drawPaint(blackPaint);
 
-        double timeDelta = System.nanoTime() - lastUpdate;
-        lastUpdate = System.nanoTime();
-        double fps = 1.0 / (timeDelta * 1e-9);
-        fpsSum += fps;
-        if (count++ == 100) {
-            Log.d("DEBUG", "Current FPS:" + fpsSum / 100);
-            count = 0;
-            fpsSum = 0;
-        }
-
         if (allBombsOutOfSight()) {
             userActive = false;
+            pointerOffset = (int) (Math.random() * 10);
+            Log.d("DEBUG", "New Pointer Offset: " + pointerOffset);
         }
         for (int i = 0; i < bombs.length; ++i) {
             render(canvas, bombs[i]);
@@ -114,8 +105,8 @@ public class Fireworks {
     public void update(Bomb bomb, boolean resetOnFinish) {
         boolean bombOutOfSight = bomb.allOutOfSight();
         if (bombOutOfSight && resetOnFinish) {
-            bomb.reset((int) (Math.random() * environment.windowWidth),
-                    (int) (Math.random() * environment.windowHeight));
+            bomb.scheduleForReset((int) (Math.random() * environment.windowWidth),
+                    (int) (Math.random() * environment.windowHeight), -1);
             bombOutOfSight = false;
         }
         if (!bombOutOfSight) {
@@ -139,9 +130,9 @@ public class Fireworks {
     /**
      * Will make a touch-bomb explode at the given position.
      */
-    public void touchExplode(int x, int y) {
+    public void touchExplode(int x, int y, int pointerId) {
         userActive = true;
-        bombs[touchCount].reset(x, y);
+        bombs[touchCount].scheduleForReset(x, y, pointerId + pointerOffset);
         touchCount = (touchCount + 1) % bombs.length;
     }
 

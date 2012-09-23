@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2011 by XMLVM.org
+/* Copyright (c) 2002-2012 by XMLVM.org
  *
  * Project Info:  http://www.xmlvm.org
  *
@@ -20,17 +20,10 @@
 
 package org.xmlvm.demo.afireworks;
 
-public class Const {
-	public final static int BOMB_COUNT = 50;
-	public final static int SPARKS_PER_BOMB = 50;
-
-	/** The delay in milliseconds in between frames. */
-	public final static int UPDATE_DELAY = 20;
-
-	final static int IMAGE_SIZE = 15;
-
-	final static float MAX2V = 70.0f;
-	final static float T = 0.3f;
-	final static float G = 9.81f;
-	final static float DV = T * G;
+/**
+ * Simple Point class.
+ */
+public class Point {
+    public float x;
+    public float y;
 }

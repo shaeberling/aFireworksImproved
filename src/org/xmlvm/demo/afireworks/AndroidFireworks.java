@@ -146,14 +146,14 @@ public class AndroidFireworks extends Activity {
                 }
                 if (touchCount == 0) {
                     for (int i = 0; i < event.getPointerCount(); ++i) {
-                        fireworks.touchExplode((int) event.getX(i), (int) event.getY(i));
+                        fireworks.touchExplode((int) event.getX(i), (int) event.getY(i), i);
                     }
                 }
                 touchCount = (touchCount + 1) % touchMod;
                 return true;
             }
         });
-        fireworks = new Fireworks(getResources(), environment);
+        fireworks = new Fireworks(new StarResources(getResources()), environment);
     }
 
     @Override

@@ -22,8 +22,6 @@ package org.xmlvm.demo.afireworks;
 
 import org.xmlvm.demo.afireworks.AndroidFireworks.Environment;
 
-import android.content.res.Resources;
-
 /**
  * A bomb is a logical group of sparks. A bomb defines where a group of stars
  * start to animate upon an "explosion".
@@ -33,7 +31,7 @@ public class Bomb {
     private boolean allOutOfSight = false;
 
 
-    public Bomb(Resources resources, Environment environment) {
+    public Bomb(StarResources resources, Environment environment) {
         sparks = new Spark[Const.SPARKS_PER_BOMB];
         for (int i = 0; i < Const.SPARKS_PER_BOMB; i++)
             sparks[i] = new Spark(resources, environment);
@@ -50,11 +48,11 @@ public class Bomb {
      * Resets all client {@link Spark}s contained in this Bomb to the given
      * location.
      */
-    public void reset(int x, int y) {
+    public void scheduleForReset(int x, int y, int pointerId) {
         allOutOfSight = false;
         int i;
         for (i = 0; i < Const.SPARKS_PER_BOMB; ++i) {
-            sparks[i].reset(x, y);
+            sparks[i].scheduleForReset(x, y, pointerId);
         }
     }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2011 by XMLVM.org
+/* Copyright (c) 2002-2012 by XMLVM.org
  *
  * Project Info:  http://www.xmlvm.org
  *
@@ -20,17 +20,21 @@
 
 package org.xmlvm.demo.afireworks;
 
-public class Const {
-	public final static int BOMB_COUNT = 50;
-	public final static int SPARKS_PER_BOMB = 50;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-	/** The delay in milliseconds in between frames. */
-	public final static int UPDATE_DELAY = 20;
+public class StarResources {
+    private final Bitmap[] starBitmaps = new Bitmap[4];
 
-	final static int IMAGE_SIZE = 15;
+    public StarResources(Resources resources) {
+        starBitmaps[0] = BitmapFactory.decodeResource(resources, R.drawable.star1);
+        starBitmaps[1] = BitmapFactory.decodeResource(resources, R.drawable.star2);
+        starBitmaps[2] = BitmapFactory.decodeResource(resources, R.drawable.star3);
+        starBitmaps[3] = BitmapFactory.decodeResource(resources, R.drawable.star4);
+    }
 
-	final static float MAX2V = 70.0f;
-	final static float T = 0.3f;
-	final static float G = 9.81f;
-	final static float DV = T * G;
+    public Bitmap getCachedStarBitmap(int num) {
+        return starBitmaps[num % starBitmaps.length];
+    }
 }
