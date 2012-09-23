@@ -44,11 +44,12 @@ public class Fireworks {
     public Fireworks(StarResources resources, Environment environment) {
         this.environment = environment;
         bombs = new Bomb[Const.BOMB_COUNT];
+
         // Initialize normal bombs.
         for (int i = 0; i < bombs.length; ++i) {
             bombs[i] = new Bomb(resources, environment);
-            bombs[i].scheduleForReset((int) (Math.random() * (environment.windowWidth - 60)) + 30,
-                    (int) (Math.random() * (environment.windowHeight - 60)) + 30, -1);
+            bombs[i].scheduleForReset((int) (Math.random() * environment.windowWidth),
+                    (int) (Math.random() * environment.windowHeight), -1);
         }
     }
 

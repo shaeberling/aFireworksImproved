@@ -1,15 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.xmlvm.demo.afireworks"
-      android:versionCode="4" android:versionName="0.3">
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:description="@string/description" android:debuggable="true" >
-        <activity android:name=".AndroidFireworks"
-                  android:label="@string/app_name" android:screenOrientation="portrait">
+    package="org.xmlvm.demo.afireworks"
+    android:versionCode="4"
+    android:versionName="0.3" >
+
+    <uses-sdk android:targetSdkVersion="7" android:minSdkVersion="7"/>
+
+    <uses-feature
+        android:name="android.software.live_wallpaper"
+        android:required="true" >
+    </uses-feature>
+
+    <application
+        android:description="@string/description"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <activity
+            android:name=".AndroidFireworks"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".wallpaper.FireworksWallpaperService"
+            android:enabled="true"
+            android:label="XMLVM Fireworks Wallpaper"
+            android:permission="android.permission.BIND_WALLPAPER" >
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" >
+                </action>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper" >
+            </meta-data>
+        </service>
+
+        <activity
+            android:name=".wallpaper.PreferenceActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Light.WallpaperSettings" >
+        </activity>
     </application>
-    <uses-sdk android:minSdkVersion="5" />
-</manifest> 
+
+</manifest>

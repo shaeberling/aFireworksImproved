@@ -22,7 +22,6 @@ package org.xmlvm.demo.afireworks;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,7 +32,6 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -62,18 +60,17 @@ public class AndroidFireworks extends Activity {
     public static final String YOUTUBE_XMLVM_URL = "http://www.youtube.com/watch?v=s8nMpi5-P-I";
 
     private SurfaceView        surfaceView;
-    private SurfaceHolder      surfaceHolder;
-    private Fireworks          fireworks;
-    private Thread             renderThread;
-    private final Environment  environment       = new Environment();
+
+    private FireworksRenderer  renderer;
 
 
     @Override
     public void onContentChanged() {
         WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
-        environment.windowWidth = d.getWidth();
-        environment.windowHeight = d.getHeight();
+        if (renderer != null) {
+            renderer.onSizeChanged(d.getWidth(), d.getHeight());
+        }
     }
 
     @Override
@@ -99,7 +96,7 @@ public class AndroidFireworks extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         surfaceView = new SurfaceView(this);
-        surfaceHolder = surfaceView.getHolder();
+        renderer = new FireworksRenderer(getResources(), surfaceView.getHolder());
 
         // No title bar.
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -125,8 +122,7 @@ public class AndroidFireworks extends Activity {
 
             @Override
             public void onSensorChanged(SensorEvent event) {
-                environment.rotX = event.values[0];
-                environment.rotY = event.values[1];
+                renderer.onSensorData(event.values[0], event.values[1]);
 
             }
         }, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -146,61 +142,25 @@ public class AndroidFireworks extends Activity {
                 }
                 if (touchCount == 0) {
                     for (int i = 0; i < event.getPointerCount(); ++i) {
-                        fireworks.touchExplode((int) event.getX(i), (int) event.getY(i), i);
+                        renderer.onTouchEvent((int) event.getX(i), (int) event.getY(i), i);
                     }
                 }
                 touchCount = (touchCount + 1) % touchMod;
                 return true;
             }
         });
-        fireworks = new Fireworks(new StarResources(getResources()), environment);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        renderThread = new Thread() {
-            long start;
-            long duration;
-            long pause;
-
-
-            public void run() {
-                while (!isInterrupted()) {
-                    start = System.currentTimeMillis();
-                    Canvas canvas = surfaceHolder.lockCanvas();
-                    if (canvas != null) {
-                        fireworks.render(canvas);
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                    }
-                    duration = System.currentTimeMillis() - start;
-                    pause = Const.UPDATE_DELAY - duration;
-                    pause = Math.max(pause, 0);
-                    try {
-                        sleep(pause);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                }
-            }
-        };
-        renderThread.start();
-        fireworks.onResume();
+        renderer.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        renderThread.interrupt();
-        renderThread = null;
-        fireworks.onPause();
-    }
-
-    /**
-     * Returns the active Environment.
-     */
-    public Environment getEnvironment() {
-        return environment;
+        renderer.onPause();
     }
 
     private void viewUri(Uri uri) {
