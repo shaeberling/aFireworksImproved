@@ -18,17 +18,12 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks.wallpaper;
+package org.xmlvm.AndroidFireworks;
 
-import org.xmlvm.demo.afireworks.R;
-
-import android.os.Bundle;
-import android.preference.PreferenceActivity;
-
-public class WallpaperPreferenceActivity extends PreferenceActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      addPreferencesFromResource(R.xml.preferences);
-    }
+/**
+ * Simple Point class.
+ */
+public class Point {
+    public float x;
+    public float y;
 }

@@ -18,9 +18,9 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks;
+package org.xmlvm.AndroidFireworks;
 
-import org.xmlvm.demo.afireworks.AndroidFireworks.Environment;
+import org.xmlvm.AndroidFireworks.AndroidFireworks.Environment;
 
 /**
  * A bomb is a logical group of sparks. A bomb defines where a group of stars

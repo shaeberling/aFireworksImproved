@@ -18,9 +18,9 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks.wallpaper;
+package org.xmlvm.AndroidFireworks.wallpaper;
 
-import org.xmlvm.demo.afireworks.FireworksRenderer;
+import org.xmlvm.AndroidFireworks.FireworksRenderer;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

@@ -18,7 +18,9 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks;
+package org.xmlvm.AndroidFireworks;
+
+import org.xmlvm.AndroidFireworks.R;
 
 import android.app.Activity;
 import android.content.Intent;

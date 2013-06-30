@@ -18,23 +18,17 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks;
+package org.xmlvm.AndroidFireworks.wallpaper;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import org.xmlvm.AndroidFireworks.R;
 
-public class StarResources {
-    private final Bitmap[] starBitmaps = new Bitmap[4];
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
 
-    public StarResources(Resources resources) {
-        starBitmaps[0] = BitmapFactory.decodeResource(resources, R.drawable.star1);
-        starBitmaps[1] = BitmapFactory.decodeResource(resources, R.drawable.star2);
-        starBitmaps[2] = BitmapFactory.decodeResource(resources, R.drawable.star3);
-        starBitmaps[3] = BitmapFactory.decodeResource(resources, R.drawable.star4);
-    }
-
-    public Bitmap getCachedStarBitmap(int num) {
-        return starBitmaps[num % starBitmaps.length];
+public class WallpaperPreferenceActivity extends PreferenceActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.preferences);
     }
 }

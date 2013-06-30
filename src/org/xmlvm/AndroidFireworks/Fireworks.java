@@ -18,9 +18,9 @@
  * USA.
  */
 
-package org.xmlvm.demo.afireworks;
+package org.xmlvm.AndroidFireworks;
 
-import org.xmlvm.demo.afireworks.AndroidFireworks.Environment;
+import org.xmlvm.AndroidFireworks.AndroidFireworks.Environment;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
