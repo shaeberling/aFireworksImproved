@@ -21,6 +21,7 @@
 package org.xmlvm.AndroidFireworks.wallpaper;
 
 import org.xmlvm.AndroidFireworks.FireworksRenderer;
+import org.xmlvm.AndroidFireworks.StarResources;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -47,7 +48,7 @@ public class FireworksWallpaperService extends WallpaperService {
         @Override
         public void onSurfaceCreated(SurfaceHolder surfaceHolder) {
             super.onSurfaceCreated(surfaceHolder);
-            renderer = new FireworksRenderer(getResources(), surfaceHolder);
+            renderer = new FireworksRenderer(new StarResources(getResources()), surfaceHolder);
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
             // Register the accelerometer listener.

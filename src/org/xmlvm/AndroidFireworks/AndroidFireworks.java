@@ -98,7 +98,7 @@ public class AndroidFireworks extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         surfaceView = new SurfaceView(this);
-        renderer = new FireworksRenderer(getResources(), surfaceView.getHolder());
+        renderer = new FireworksRenderer(new StarResources(getResources()), surfaceView.getHolder());
 
         // No title bar.
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);

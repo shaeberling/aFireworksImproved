@@ -22,18 +22,19 @@ package org.xmlvm.AndroidFireworks;
 
 import org.xmlvm.AndroidFireworks.AndroidFireworks.Environment;
 
+import android.graphics.Canvas;
+
 /**
  * A bomb is a logical group of sparks. A bomb defines where a group of stars
  * start to animate upon an "explosion".
  */
 public class Bomb {
-    private Spark   sparks[];
+    private Spark   sparks[]      = new Spark[Const.SPARKS_PER_BOMB];
     private boolean allOutOfSight = false;
 
 
     public Bomb(StarResources resources, Environment environment) {
-        sparks = new Spark[Const.SPARKS_PER_BOMB];
-        for (int i = 0; i < Const.SPARKS_PER_BOMB; i++)
+        for (int i = 0; i < sparks.length; i++)
             sparks[i] = new Spark(resources, environment);
     }
 
@@ -45,29 +46,37 @@ public class Bomb {
     }
 
     /**
+     * Render call sparks of this bomb on the given canvas.
+     */
+    public void render(Canvas canvas) {
+        for (Spark spark : sparks) {
+            spark.render(canvas);
+        }
+    }
+
+    /**
      * Resets all client {@link Spark}s contained in this Bomb to the given
      * location.
      */
     public void scheduleForReset(int x, int y, int pointerId) {
         allOutOfSight = false;
-        int i;
-        for (i = 0; i < Const.SPARKS_PER_BOMB; ++i) {
-            sparks[i].scheduleForReset(x, y, pointerId);
+        for (Spark spark : sparks) {
+            spark.scheduleForReset(x, y, pointerId);
         }
     }
 
     /**
      * Returns whether all sparks are out of sight.
      */
-    public boolean allOutOfSight() {
+    public boolean isAllOutOfSight() {
         // No need to recalculate if the bomb hasn't been reset.
         if (allOutOfSight) {
             return true;
         }
 
-        int i, count = 0;
-        for (i = 0; i < Const.SPARKS_PER_BOMB; ++i) {
-            if (sparks[i].isOutOfSight()) {
+        int count = 0;
+        for (Spark spark : sparks) {
+            if (spark.isOutOfSight()) {
                 count++;
             }
         }

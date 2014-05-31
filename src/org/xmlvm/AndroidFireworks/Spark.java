@@ -41,8 +41,8 @@ public class Spark {
     private boolean               outOfSight;
     private Environment           environment;
     private Paint                 paint            = new Paint();
-    private long                  lastRenderTime;
-    private long                  renderTimeDiff;
+    private long                  lastUpdateTime;
+    private long                  updateTimeDiff;
     private float                 stretchFactor;
     private boolean               scheduleForReset = false;
     private Point                 whereToReset     = new Point();
@@ -74,7 +74,7 @@ public class Spark {
         vx = (float) (Math.random() * Const.MAX2V) - (Const.MAX2V / 2);
         vy = (float) (Math.random() * Const.MAX2V) - (Const.MAX2V / 2);
         outOfSight = false;
-        lastRenderTime = 0;
+        lastUpdateTime = 0;
         scheduleForReset = false;
     }
 
@@ -98,10 +98,6 @@ public class Spark {
         return outOfSight;
     }
 
-    public void setOutOfSight(boolean outOfSight) {
-        this.outOfSight = outOfSight;
-    }
-
     public void nextStep() {
         if (scheduleForReset) {
             reset();
@@ -110,30 +106,33 @@ public class Spark {
         if (outOfSight) {
             return;
         }
-        if (x < -2 * Const.IMAGE_SIZE || x > environment.windowWidth || y < -2 * Const.IMAGE_SIZE
-                || y > environment.windowHeight) {
-            // This spark is out of reach
-            outOfSight = true;
-            return;
-        }
 
         long currentTimeMillis = System.currentTimeMillis();
-        if (lastRenderTime != 0) {
-            renderTimeDiff = currentTimeMillis - lastRenderTime;
-            stretchFactor = renderTimeDiff / (float) Const.UPDATE_DELAY;
+        if (lastUpdateTime != 0) {
+            updateTimeDiff = currentTimeMillis - lastUpdateTime;
+            stretchFactor = updateTimeDiff / (float) Const.UPDATE_DELAY;
         } else {
             stretchFactor = 1;
         }
-        lastRenderTime = currentTimeMillis;
+        lastUpdateTime = currentTimeMillis;
 
         // Gravity
         vx += (Const.DV * (-environment.rotX / 10f) * stretchFactor);
         vy += (Const.DV * (environment.rotY / 10f) * stretchFactor);
         x += (Const.T * vx * stretchFactor);
         y += (Const.T * vy * stretchFactor);
+
+        if (x < -5 * Const.IMAGE_SIZE || x > environment.windowWidth || y < -5 * Const.IMAGE_SIZE
+                || y > environment.windowHeight) {
+            // This spark is out of reach
+            outOfSight = true;
+        }
     }
 
     public void render(Canvas canvas) {
+        if (outOfSight) {
+            return;
+        }
         canvas.drawBitmap(bitmap, x, y, paint);
     }
 
